@@ -19,7 +19,6 @@ public class RestServer {
         filterHolder.setInitParameter("allowedOrigins", "*");
         filterHolder.setInitParameter("allowedMethods", "GET, POST, PUT");
 
-
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath(Constants.API_PATH);
         context.addFilter(filterHolder, "/*", null);
