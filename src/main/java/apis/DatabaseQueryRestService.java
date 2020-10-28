@@ -17,7 +17,7 @@ public class DatabaseQueryRestService extends RestService {
     @Path("questions")
     public Response getQuestions() {
         try {
-            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery("select * from question, _type").toString());
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery("select * from question").toString());
         }
         catch (Exception e) {
             JSONObject errorJson = new JSONObject();
@@ -32,6 +32,20 @@ public class DatabaseQueryRestService extends RestService {
     public Response getQuestionsByType(@PathParam("type") String type) {
         try {
             return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery("select * from question, _type where question.type_id=_type.id and _type.type_name='" + type + "'" ).toString());
+        }
+        catch (Exception e) {
+            JSONObject errorJson = new JSONObject();
+            errorJson.put("msg", "failure whale");
+            return okJSON(Response.Status.ACCEPTED, errorJson.toString());
+        }
+    }
+
+
+    @GET
+    @Path("questions/subject/{subject}")
+    public Response getQuestionsBySubject(@PathParam("subject") String subject) {
+        try {
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery("select * from question, _type where question.type_id=_type.id and _type.type_name='" + subject + "'" ).toString());
         }
         catch (Exception e) {
             JSONObject errorJson = new JSONObject();
