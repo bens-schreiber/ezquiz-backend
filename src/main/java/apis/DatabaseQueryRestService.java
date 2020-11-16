@@ -53,6 +53,24 @@ public class DatabaseQueryRestService extends RestService {
     }
 
     @GET
+    @Path("questions/{subject}/{type}")
+    public Response getQuestionsByTypeAndSubject(
+            @PathParam("subject") String subject,
+            @PathParam("type") String type) {
+        try {
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
+                    Constants.NOANSWERQUERY +
+                            ",_subject,_type where question.subjects=_subject.id and _subject.subject_name='" + subject + "'"
+                            + " and question.type_id=_type.id and _type.type_name='" + type + "'"
+            ).toString());
+        } catch (Exception e) {
+            JSONObject errorJson = new JSONObject();
+            errorJson.put("msg", "failure whale");
+            return okJSON(Response.Status.ACCEPTED, errorJson.toString());
+        }
+    }
+
+    @GET
     @Path("questions/{id}")
     public Response getQuestionByID(@PathParam("id") String id) {
         try {
