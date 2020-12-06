@@ -7,7 +7,7 @@ public class Constants {
     static public String LOCAL_HOST = "localhost";
 
     static public String DB_HOST = "";
-    static public int CONNCETION_POOL_MAX_CONNECTIONS_PER_PARTITION = 10;
+    static public int CONNECTION_POOL_MAX_CONNECTIONS_PER_PARTITION = 10;
     static public int CONNECTION_POOL_MIN_CONNECTIONS_PER_PARTITION = 5;
     static public int CONNECTION_POOL_PARTITION_COUNT = 1;
     static public String PASSWORD_HASH_BLOWFISH = "2a";
@@ -15,7 +15,7 @@ public class Constants {
     static public String adminUser = "root";
     static public String adminPassword = "root";
 
-    static public String NOANSWERQUERY = "select question_num, question, options, type_id, subjects from question ";
+    static public String NO_ANSWER_QUERY = "select question_num, question, options, directions, type_name, subject_name from question join _subject on question.subjects=_subject.id join _type on question.type_id=_type.id";
 
     static public String getDbPath(boolean localHost) {
         // if (localHost) {

@@ -25,5 +25,8 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20200518'
     compile group: 'com.jolbox', name: 'bonecp', version: '0.8.0.RELEASE'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.2'
+
 
 }

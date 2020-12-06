@@ -31,7 +31,7 @@ public class DatabaseQueryRestService extends RestService {
     @Path("questions/type/{type}")
     public Response getQuestionsByType(@PathParam("type") String type) {
         try {
-            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NOANSWERQUERY + ",_type where question.type_id=_type.id and _type.type_name='" + type + "'").toString());
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NO_ANSWER_QUERY + " and _type.type_name='" + type + "'").toString());
         } catch (Exception e) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("msg", "failure whale");
@@ -44,7 +44,7 @@ public class DatabaseQueryRestService extends RestService {
     @Path("questions/subject/{subject}")
     public Response getQuestionsBySubject(@PathParam("subject") String subject) {
         try {
-            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NOANSWERQUERY + ",_subject where question.subjects=_subject.id and _subject.subject_name='" + subject + "'").toString());
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NO_ANSWER_QUERY + " and _subject.subject_name='" + subject + "'").toString());
         } catch (Exception e) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("msg", "failure whale");
@@ -52,17 +52,17 @@ public class DatabaseQueryRestService extends RestService {
         }
     }
 
+
     @GET
     @Path("questions/{subject}/{type}")
     public Response getQuestionsByTypeAndSubject(
             @PathParam("subject") String subject,
             @PathParam("type") String type) {
         try {
-            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                    Constants.NOANSWERQUERY +
-                            ",_subject,_type where question.subjects=_subject.id and _subject.subject_name='" + subject + "'"
-                            + " and question.type_id=_type.id and _type.type_name='" + type + "'"
-            ).toString());
+
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery
+                    (Constants.NO_ANSWER_QUERY + " and _subject.subject_name='" + subject + "' and _type.type_name='" + type + "'").toString());
+
         } catch (Exception e) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("msg", "failure whale");
@@ -74,7 +74,7 @@ public class DatabaseQueryRestService extends RestService {
     @Path("questions/{id}")
     public Response getQuestionByID(@PathParam("id") String id) {
         try {
-            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NOANSWERQUERY + "where question_num='" + id + "'").toString());
+            return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(Constants.NO_ANSWER_QUERY + " and question_num='" + id + "'").toString());
         } catch (Exception e) {
             JSONObject errorJson = new JSONObject();
             errorJson.put("msg", "failure whale");

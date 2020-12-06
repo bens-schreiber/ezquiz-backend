@@ -137,7 +137,7 @@ public class QueryExecutor {
             config.setUsername(Constants.adminUser);
             config.setPassword(Constants.adminPassword);
             config.setMinConnectionsPerPartition(Constants.CONNECTION_POOL_MIN_CONNECTIONS_PER_PARTITION);
-            config.setMaxConnectionsPerPartition(Constants.CONNCETION_POOL_MAX_CONNECTIONS_PER_PARTITION);
+            config.setMaxConnectionsPerPartition(Constants.CONNECTION_POOL_MAX_CONNECTIONS_PER_PARTITION);
             config.setPartitionCount(Constants.CONNECTION_POOL_PARTITION_COUNT);
             connectionPool = new BoneCP(config);
 
