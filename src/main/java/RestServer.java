@@ -1,5 +1,5 @@
-import apis.DatabaseQueryRestService;
-import apis.HelloWorldRestService;
+import apis.LoginDatabaseQueryRestService;
+import apis.QuestionsDatabaseQueryRestService;
 import etc.Constants;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -50,8 +50,8 @@ public class RestServer {
          */
         jerseyServlet.setInitParameter(
                 "jersey.config.server.provider.classnames",
-                HelloWorldRestService.class.getCanonicalName() + "," +
-                DatabaseQueryRestService.class.getCanonicalName()
+                QuestionsDatabaseQueryRestService.class.getCanonicalName() + ","
+                + LoginDatabaseQueryRestService.class.getCanonicalName()
         );
     }
 }

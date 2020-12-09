@@ -28,8 +28,40 @@ public class QueryExecutor {
         return conn;
     }
 
+    public static void executeUpdateQuery(String query) {
+        Statement stmt = null;
+        Connection con = null;
+        ResultSet rs = null;
 
-    public static JSONObject runQuery(String query) throws SQLException {
+        try {
+
+            con = getConnection();
+
+            if (con == null) {
+                throw new SQLException("Failed to establish a connection with the local database");
+            }
+
+            stmt = con.createStatement();
+            stmt.executeUpdate(query);
+
+
+        } catch (Exception e) {
+            System.err.println("Error executing query: " + e.getMessage());
+        } finally {
+            try {
+                stmt.close();
+            } catch (SQLException ignored) {
+            }
+
+            }
+            try {
+                con.close();
+            } catch (SQLException ignored) {
+
+            }
+        }
+
+    public static JSONObject runQuery(String query) {
         Statement stmt = null;
         Connection con = null;
         ResultSet rs = null;
@@ -45,7 +77,7 @@ public class QueryExecutor {
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
 
-            // Use this for gettting col names
+            // Use this for getting col names
             ResultSetMetaData rsmd = rs.getMetaData();
             int objCount = 0;
             while (rs.next()) {
@@ -62,24 +94,24 @@ public class QueryExecutor {
                     tmp.put(columnName, obj.toString());
                 }
                 // add this object to the main json object
-                jsonObject.put("obj" + Integer.toString(objCount++), tmp);
+                jsonObject.put("obj" + objCount++, tmp);
             }
         } catch (Exception e) {
             System.err.println("Error executing query: " + e.getMessage());
         } finally {
             try {
                 stmt.close();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
 
             }
             try {
                 rs.close();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
 
             }
             try {
                 con.close();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
 
             }
         }
@@ -107,14 +139,15 @@ public class QueryExecutor {
                return the connection back to the connection pool.
              */
             try {
+                assert stmt != null;
                 stmt.close();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
 
             }
         }
         try {
             con.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
 
         }
 
@@ -123,7 +156,7 @@ public class QueryExecutor {
 
 
     private static synchronized void setUpconnectionPool() {
-        Connection connection = null;
+        Connection connection;
         try {
             // Set up the connection pool
             try {
@@ -146,10 +179,8 @@ public class QueryExecutor {
             if (connection != null) {
                 // Assign connection pool to current server.thread
                 System.out.println("Successfully connected to database: " + Constants.getDbPath(true));
-                QueryExecutor.connectionPool = connectionPool;
             } else {
                 System.err.println("Failed to establish a connection with database: " + Constants.getDbPath(true));
-                return;
             }
 
         } catch (SQLException e) {

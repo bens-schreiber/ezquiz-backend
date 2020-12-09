@@ -13,7 +13,8 @@ import javax.ws.rs.core.Response;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("database")
-public class DatabaseQueryRestService extends RestService {
+public class QuestionsDatabaseQueryRestService extends RestService {
+
     @GET
     @Path("questions")
     public Response getQuestions() {
@@ -82,7 +83,6 @@ public class DatabaseQueryRestService extends RestService {
         }
 
     }
-
 
     @GET
     @Path("questions/answer/{id}")
