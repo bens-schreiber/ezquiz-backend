@@ -49,17 +49,11 @@ public class LoginDatabaseQueryRestService extends RestService{
     public Response registerUser(UserData request) {
         try {
 
-            QueryExecutor.executeUpdateQuery(
+            boolean userRegistered = QueryExecutor.executeUpdateQuery(
                     "insert into info(username, pass) values "
-                    + "('" + request.getUsername() + "','" + request.getPassword() + "')");
+                    + "('" + request.getUsername() + "','" + request.getPassword() + "')") == 1;
 
-            boolean userExists = QueryExecutor.runQuery(
-                    "select username, pass from info where username ='"
-                            + request.getUsername() + "'"
-                            + " and pass='"
-                            + request.getPassword() + "'").has("obj0");
-
-            if (userExists) {
+            if (userRegistered) {
                 return okJSON(Response.Status.ACCEPTED);
             } else {
                 return okJSON(Response.Status.UNAUTHORIZED);

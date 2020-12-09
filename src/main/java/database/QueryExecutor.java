@@ -28,10 +28,9 @@ public class QueryExecutor {
         return conn;
     }
 
-    public static void executeUpdateQuery(String query) {
+    public static int executeUpdateQuery(String query) {
         Statement stmt = null;
         Connection con = null;
-        ResultSet rs = null;
 
         try {
 
@@ -42,7 +41,7 @@ public class QueryExecutor {
             }
 
             stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            return stmt.executeUpdate(query);
 
 
         } catch (Exception e) {
@@ -59,7 +58,8 @@ public class QueryExecutor {
             } catch (SQLException ignored) {
 
             }
-        }
+        return 0;
+    }
 
     public static JSONObject runQuery(String query) {
         Statement stmt = null;
