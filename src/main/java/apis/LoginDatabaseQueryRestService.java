@@ -1,12 +1,15 @@
 package apis;
 
 import apis.pojo.UserData;
+import com.mysql.cj.log.Log;
+import database.LoggedInUsers;
 import database.QueryExecutor;
 import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.UUID;
 
 @Path("users")
 public class LoginDatabaseQueryRestService extends RestService{
@@ -26,7 +29,9 @@ public class LoginDatabaseQueryRestService extends RestService{
 
             //todo: add token
            if (userExists) {
-               return okJSON(Response.Status.ACCEPTED);
+               String uuid = UUID.randomUUID().toString();
+               LoggedInUsers.getLoggedInUsers().put(request.getUsername(), uuid);
+               return okJSON_(Response.Status.ACCEPTED, uuid);
            } else {
                return okJSON(Response.Status.UNAUTHORIZED);
            }
