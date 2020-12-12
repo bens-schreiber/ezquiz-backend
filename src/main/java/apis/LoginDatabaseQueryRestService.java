@@ -1,7 +1,7 @@
 package apis;
 
+import apis.pojo.TestKey;
 import apis.pojo.UserData;
-import com.mysql.cj.log.Log;
 import database.LoggedInUsers;
 import database.QueryExecutor;
 import org.json.JSONObject;
@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Random;
 import java.util.UUID;
 
 @Path("users")
@@ -22,12 +23,11 @@ public class LoginDatabaseQueryRestService extends RestService{
         try {
 
             boolean userExists = QueryExecutor.runQuery(
-                    "select username, pass from info where username ='"
+                    "select username, pass from user_logins where username ='"
                             + request.getUsername() + "'"
                             + " and pass='"
                             + request.getPassword() + "'").has("obj0");
 
-            //todo: add token
            if (userExists) {
                String uuid = UUID.randomUUID().toString();
                LoggedInUsers.getLoggedInUsers().put(request.getUsername(), uuid);
@@ -50,7 +50,7 @@ public class LoginDatabaseQueryRestService extends RestService{
         try {
 
             boolean userRegistered = QueryExecutor.executeUpdateQuery(
-                    "insert into info(username, pass) values "
+                    "insert into user_logins(username, pass) values "
                     + "('" + request.getUsername() + "','" + request.getPassword() + "')") == 1;
 
             if (userRegistered) {

@@ -1,7 +1,6 @@
 package apis;
 
 import javax.ws.rs.core.Response;
-import java.util.UUID;
 
 public class RestService {
 

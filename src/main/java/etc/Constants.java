@@ -22,4 +22,5 @@ public class Constants {
         return Constants.JDBC + ":" + "mysql" + "://" + LOCAL_HOST + ':' + "3306" + "/" + "questions_db";
         //}
     }
+
 }
