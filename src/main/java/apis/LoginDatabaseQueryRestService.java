@@ -1,15 +1,12 @@
 package apis;
 
-import apis.pojo.TestKey;
 import apis.pojo.UserData;
 import database.LoggedInUsers;
 import database.QueryExecutor;
-import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Random;
 import java.util.UUID;
 
 @Path("users")
@@ -29,10 +26,15 @@ public class LoginDatabaseQueryRestService extends RestService{
                             + request.getPassword() + "'").has("obj0");
 
            if (userExists) {
+
                String uuid = UUID.randomUUID().toString();
+
                LoggedInUsers.getLoggedInUsers().put(request.getUsername(), uuid);
+
                return okJSON_(Response.Status.ACCEPTED, uuid);
+
            } else {
+
                return okJSON(Response.Status.UNAUTHORIZED);
            }
 
@@ -61,7 +63,7 @@ public class LoginDatabaseQueryRestService extends RestService{
 
         } catch (Exception e) {
             e.printStackTrace();
-                return okJSON(Response.Status.UNAUTHORIZED);
+            return okJSON(Response.Status.UNAUTHORIZED);
             }
         }
 }
