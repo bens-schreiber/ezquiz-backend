@@ -15,7 +15,7 @@ public class Constants {
     static public String adminUser = "root";
     static public String adminPassword = "root";
 
-    static public String NO_ANSWER_QUERY = "select question_num, question, options, directions, type_name, subject_name from question join _subject on question.subjects=_subject.id join _type on question.type_id=_type.id";
+    static public String NO_ANSWER_QUERY = "select id, question, options, directions, type, subject from question";
 
     static public String getDbPath(boolean localHost) {
         // if (localHost) {

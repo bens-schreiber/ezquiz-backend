@@ -20,9 +20,9 @@ public class LoginDatabaseQueryRestService extends RestService{
         try {
 
             boolean userExists = QueryExecutor.runQuery(
-                    "select username, pass from user_logins where username ='"
+                    "select username, password from user_logins where username ='"
                             + request.getUsername() + "'"
-                            + " and pass='"
+                            + " and password='"
                             + request.getPassword() + "'").has("obj0");
 
            if (userExists) {
@@ -31,7 +31,11 @@ public class LoginDatabaseQueryRestService extends RestService{
 
                LoggedInUsers.getLoggedInUsers().put(request.getUsername(), uuid);
 
-               return okJSON_(Response.Status.ACCEPTED, uuid);
+               boolean admin = Boolean.parseBoolean(QueryExecutor.runQuery("select admin from user_logins where username='" + request.getUsername() +"'")
+                       .getJSONObject("obj0")
+                       .getString("admin"));
+
+               return okJSON_(Response.Status.ACCEPTED, uuid, admin);
 
            } else {
 
@@ -52,8 +56,8 @@ public class LoginDatabaseQueryRestService extends RestService{
         try {
 
             boolean userRegistered = QueryExecutor.executeUpdateQuery(
-                    "insert into user_logins(username, pass) values "
-                    + "('" + request.getUsername() + "','" + request.getPassword() + "')") == 1;
+                    "insert into user_logins(username, password, admin) values "
+                    + "('" + request.getUsername() + "','" + request.getPassword() + "'," + 0 + ")") == 1;
 
             if (userRegistered) {
                 return okJSON(Response.Status.ACCEPTED);
