@@ -31,6 +31,7 @@ public class QueryExecutor {
     public static int executeUpdateQuery(String query) {
         Statement stmt = null;
         Connection con = null;
+        int response = 0;
 
         try {
 
@@ -41,7 +42,7 @@ public class QueryExecutor {
             }
 
             stmt = con.createStatement();
-            return stmt.executeUpdate(query);
+            response = stmt.executeUpdate(query);
 
 
         } catch (Exception e) {
@@ -58,7 +59,7 @@ public class QueryExecutor {
             } catch (SQLException ignored) {
 
             }
-        return 0;
+        return response;
     }
 
     public static JSONObject runQuery(String query) {
@@ -96,6 +97,7 @@ public class QueryExecutor {
                 // add this object to the main json object
                 jsonObject.put("obj" + objCount++, tmp);
             }
+
         } catch (Exception e) {
             System.err.println("Error executing query: " + e.getMessage());
         } finally {

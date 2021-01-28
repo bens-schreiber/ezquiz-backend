@@ -1,5 +1,6 @@
-import apis.LoginDatabaseQueryRestService;
+import apis.UsersDatabaseQueryRestService;
 import apis.QuestionsDatabaseQueryRestService;
+import apis.QuizDatabaseQueryRestService;
 import etc.Constants;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -10,6 +11,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 /**
  Register your rest services here! ( in registerRestServices() )
  */
+//todo: clean this all up
 
 public class RestServer {
     public static void main(String[] args) throws Exception {
@@ -51,7 +53,8 @@ public class RestServer {
         jerseyServlet.setInitParameter(
                 "jersey.config.server.provider.classnames",
                 QuestionsDatabaseQueryRestService.class.getCanonicalName() + ","
-                + LoginDatabaseQueryRestService.class.getCanonicalName()
+                + UsersDatabaseQueryRestService.class.getCanonicalName() + ","
+                + QuizDatabaseQueryRestService.class.getCanonicalName()
         );
     }
 }
