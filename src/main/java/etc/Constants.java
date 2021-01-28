@@ -5,6 +5,7 @@ public class Constants {
     static public String API_PATH = "/api";
     static public String JDBC = "jdbc";
     static public String LOCAL_HOST = "localhost";
+    static public String SQL_IP = "35.236.74.141";
 
     static public String DB_HOST = "";
     static public int CONNECTION_POOL_MAX_CONNECTIONS_PER_PARTITION = 10;
@@ -18,9 +19,10 @@ public class Constants {
     static public String NO_ANSWER_QUERY = "select id, question, options, directions, type, subject from question";
 
     static public String getDbPath(boolean localHost) {
-        // if (localHost) {
-        return Constants.JDBC + ":" + "mysql" + "://" + LOCAL_HOST + ':' + "3306" + "/" + "questions_db";
-        //}
+         if (localHost) {
+            return Constants.JDBC + ":" + "mysql" + "://" + LOCAL_HOST + ':' + "3306" + "/" + "questions_db";
+        }
+        return Constants.JDBC + ":" + "mysql" + "://" + SQL_IP+ ':' + "3306" + "/" + "questions_db";
     }
 
 }

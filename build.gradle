@@ -9,8 +9,11 @@ repositories {
 }
 
 jar {
-    baseName = 'gs-gradle'
-    version = '0.1.0'
+    manifest {
+        attributes(
+                'Main-Class': 'src.RestServer.java'
+        )
+    }
 }
 
 dependencies {
@@ -30,8 +33,4 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
     testCompile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.30'
-
-
-
-
 }
