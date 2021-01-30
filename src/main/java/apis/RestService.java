@@ -1,6 +1,6 @@
 package apis;
 
-import database.LoggedInUsers;
+import database.UserStatus;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -31,7 +31,7 @@ public class RestService {
     //Validate that the given HttpHeaders contain a token in the LoggedInUsers map.
     public boolean validate(HttpHeaders headers) {
 
-        return LoggedInUsers.getLoggedInUsers().containsValue(String.valueOf(headers.getRequestHeader("token").get(0)));
+        return UserStatus.getLoggedInUsers().contains(String.valueOf(headers.getRequestHeader("token").get(0)));
 
     }
 }

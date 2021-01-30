@@ -1,7 +1,7 @@
 package apis;
 
 import apis.pojo.UserData;
-import database.LoggedInUsers;
+import database.UserStatus;
 import database.QueryExecutor;
 
 import javax.ws.rs.*;
@@ -34,7 +34,7 @@ public class UsersDatabaseQueryRestService extends RestService {
 
                 String uuid = UUID.randomUUID().toString();
 
-                LoggedInUsers.getLoggedInUsers().put(request.getUsername(), uuid);
+                UserStatus.getLoggedInUsers().add(uuid);
 
                 boolean admin = Boolean.parseBoolean(QueryExecutor.runQuery("select admin from user_logins where username='" + request.getUsername() + "'")
                         .getJSONObject("obj0")

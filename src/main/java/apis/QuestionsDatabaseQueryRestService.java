@@ -17,15 +17,23 @@ public class QuestionsDatabaseQueryRestService extends RestService {
 
     @GET
     @Path("{quizKey}")
-    //Grab all questions from the Quiz Owner with the Quiz Name, without displaying answers
+    //Grab all questions from the Quiz Key, without displaying answers
     public Response getQuestions(@PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
 
         if (validate(headers)) {
             try {
 
-                return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                        Constants.NO_ANSWER_QUERY + " where question.quizkey = " + quizKey
-                ).toString());
+                JSONObject response = new JSONObject();
+
+                response.put("questions", new JSONObject(QueryExecutor.runQuery(
+                        Constants.NO_ANSWER_QUERY + " where quizkey = " + quizKey
+                ).toString()));
+
+                response.put("preferences", new JSONObject(QueryExecutor.runQuery(
+                        "select * from quiz_preferences where quizkey = " + quizKey
+                ).toString()));
+
+                return okJSON(Response.Status.ACCEPTED, response.toString());
 
             } catch (Exception e) {
                 return okJSON(Response.Status.NO_CONTENT);
@@ -58,7 +66,7 @@ public class QuestionsDatabaseQueryRestService extends RestService {
 
     @GET
     @Path("answer/{ids}")
-    //Grab all question answers from the Quiz Owner with the Quiz Name and the given ids.
+    //Grab all question answers from ids
     public Response getQuestionAnswerByID(@PathParam("ids") String ids, @Context HttpHeaders headers) {
 
         if (validate(headers)) {
@@ -67,6 +75,27 @@ public class QuestionsDatabaseQueryRestService extends RestService {
 
                 return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
                         "select answer, id from question where id in (" + ids + ")"
+                ).toString());
+
+            } catch (Exception e) {
+                return okJSON(Response.Status.NO_CONTENT);
+            }
+        }
+
+        return okJSON(Response.Status.UNAUTHORIZED);
+    }
+
+    @GET
+    @Path("answers/{quizKey}")
+    //Grab all question answers from quiz key
+    public Response getQuestionAnswerKey(@PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
+
+        if (validate(headers)) {
+
+            try {
+
+                return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
+                        "select * from question where quizkey=" + quizKey
                 ).toString());
 
             } catch (Exception e) {

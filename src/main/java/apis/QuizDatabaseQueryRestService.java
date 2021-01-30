@@ -1,14 +1,15 @@
 package apis;
 
 import apis.pojo.Question;
-import apis.pojo.UserData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.QueryExecutor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.management.Query;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -32,12 +33,15 @@ public class QuizDatabaseQueryRestService extends RestService {
         if (validate(headers)) {
 
             try {
+
+                JSONObject jsonObject = new JSONObject(json);
+                JSONObject preferences = (JSONObject) jsonObject.get("preferences");
+                JSONArray jsonQuestions = new JSONArray(jsonObject.get("questions").toString());
+
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-                List<Question> questions = objectMapper.readValue(json, new TypeReference<>() {
-                });
+                List<Question> questions = objectMapper.readValue(jsonQuestions.toString(), new TypeReference<>() {});
 
-                //todo: collisions could occur with this, handle them
                 int id = new Random().nextInt(100000);
                 int quizKey = new Random().nextInt(10000);
 
@@ -68,9 +72,22 @@ public class QuizDatabaseQueryRestService extends RestService {
                     id++;
                 }
 
+                valid = QueryExecutor.executeUpdateQuery("insert into quiz_preferences values ("
+                        + quizKey + ","
+                        + preferences.get("calculator") + ","
+                        + preferences.get("answers") + ","
+                        + preferences.get("notepad") + ","
+                        + preferences.get("drawingpad") + ")"
+
+                ) == 1;
+
+                if (!valid) {
+                    return okJSON(Response.Status.NO_CONTENT);
+                }
+
                 return okJSON(Response.Status.ACCEPTED);
 
-            } catch (JsonProcessingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -88,8 +105,9 @@ public class QuizDatabaseQueryRestService extends RestService {
 
                 boolean valid = QueryExecutor.executeUpdateQuery("delete from question where quizkey=" + quizkey)
                         + QueryExecutor.executeUpdateQuery("delete from user_saved_quizkeys where quizkey=" + quizkey)
-                        + QueryExecutor.executeUpdateQuery("delete from user_quiz_scores where quizkey=" + quizkey) > 2;
-
+                        + QueryExecutor.executeUpdateQuery("delete from user_quiz_scores where quizkey=" + quizkey)
+                        + QueryExecutor.executeUpdateQuery("delete from quiz_preferences where quizkey=" + quizkey)
+                        > 3;
                 if (valid) {
 
                     return okJSON(Response.Status.ACCEPTED);

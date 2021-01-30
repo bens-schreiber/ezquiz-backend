@@ -11,10 +11,10 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 /**
  Register your rest services here! ( in registerRestServices() )
  */
-//todo: clean this all up
 
 public class RestServer {
     public static void main(String[] args) throws Exception {
+
         FilterHolder filterHolder = new FilterHolder(CrossOriginFilter.class);
 
         // TODO: Tweak this to only allow UI as an origin

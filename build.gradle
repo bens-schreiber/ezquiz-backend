@@ -8,14 +8,6 @@ repositories {
     mavenCentral()
 }
 
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'src.RestServer.java'
-        )
-    }
-}
-
 dependencies {
     compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.7'
     compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet-core', version: '2.7'
