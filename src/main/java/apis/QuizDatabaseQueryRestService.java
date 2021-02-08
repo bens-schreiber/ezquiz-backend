@@ -1,15 +1,14 @@
 package apis;
 
 import apis.pojo.Question;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.QueryExecutor;
+import etc.Constants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.management.Query;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -34,82 +33,111 @@ public class QuizDatabaseQueryRestService extends RestService {
 
             try {
 
-                JSONObject jsonObject = new JSONObject(json);
-                JSONObject preferences = (JSONObject) jsonObject.get("preferences");
-                JSONArray jsonQuestions = new JSONArray(jsonObject.get("questions").toString());
+                //Turn the string sent by the software into a JSON object
+                JSONObject consumedJSON = new JSONObject(json);
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-                List<Question> questions = objectMapper.readValue(jsonQuestions.toString(), new TypeReference<>() {});
-
-                int id = new Random().nextInt(100000);
+                //Generate a quiz key
+                //todo: handle collisions?
                 int quizKey = new Random().nextInt(10000);
 
+                //Grab the quiz JSON from the consumedJSON
+                JSONObject quiz = (JSONObject) consumedJSON.get("quiz");
+                JSONObject preferences = (JSONObject) consumedJSON.get("preferences");
+
+                //Execute the SQL Query
+                //Use valid boolean to error handle sql.
                 boolean valid;
-                for (Question question : questions) {
-                    valid = QueryExecutor.executeUpdateQuery("insert into question values ("
-                            + id + ", "
-                            + quizKey + ", "
-                            + "'" + question.getQuizowner() + "', "
-                            + "'" + question.getQuizname() + "', "
-                            + "'" + question.getQuestion() + "', "
-                            + "'" + question.getAnswer() + "', "
-                            + "'" + question.getType() + "', "
-                            + "'" + question.getSubject() + "', "
-                            + "'" + question.getOptions() + "', "
-                            + "'" + question.getDirections() +"')"
-                    ) == 1;
-
-                    if (!valid) {
-
-                        //Delete all values from sql.
-                        QueryExecutor.executeUpdateQuery(
-                                "delete from question where question.quizowner='" + question.getQuizowner() + "'" +
-                                        " and question.quizname='" + question.getQuizname() + "'");
-                        return okJSON(Response.Status.NO_CONTENT);
-                    }
-
-                    id++;
-                }
-
-                valid = QueryExecutor.executeUpdateQuery("insert into quiz_preferences values ("
+                valid = QueryExecutor.executeUpdateQuery("insert into quizzes values("
                         + quizKey + ","
+                        + "'" + quiz.get("quizname") + "',"
+                        + "'" + quiz.get("quizowner") + "',"
                         + preferences.get("calculator") + ","
                         + preferences.get("answers") + ","
                         + preferences.get("notepad") + ","
                         + preferences.get("drawingpad") + ")"
-
                 ) == 1;
 
-                if (!valid) {
-                    return okJSON(Response.Status.NO_CONTENT);
+                //If query executed properly
+                if (valid) {
+
+                    //Grab the question JSON from the consumedJSON
+                    JSONArray jsonQuestions = new JSONArray(consumedJSON.get("questions").toString());
+
+                    //Using ObjectMapper, turn the jsonQuestions JSONArray into a list of Question pojo's.
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                    List<Question> questions = objectMapper.readValue(jsonQuestions.toString(), new TypeReference<>() {});
+
+                    //Create a random seed for the question ID and increase linearly for every id
+                    int question_id = new Random().nextInt(100000);
+                    for (Question question : questions) {
+                        valid = QueryExecutor.executeUpdateQuery("insert into question values ("
+                                + question_id++ + ", "
+                                + quizKey + ", "
+                                + "'" + question.getQuestion() + "', "
+                                + "'" + question.getAnswer() + "', "
+                                + "'" + question.getType() + "', "
+                                + "'" + question.getSubject() + "', "
+                                + "'" + question.getOptions() + "', "
+                                + "'" + question.getDirections() + "')"
+                        ) == 1;
+                    }
+                    if (valid) return okJSON(Response.Status.ACCEPTED);
                 }
 
-                return okJSON(Response.Status.ACCEPTED);
+                //Return no content on sql failure
+                return okJSON(Response.Status.NO_CONTENT);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
 
         return okJSON(Response.Status.UNAUTHORIZED);
 
     }
 
+    @GET
+    @Path("{quizKey}")
+    //Grab all questions from the Quiz Key, without displaying answers
+    public Response getQuiz(@PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
+
+        if (validate(headers)) {
+            try {
+
+                //Assemble response
+                JSONObject response = new JSONObject();
+
+                //Get all questions
+                response.put("questions", new JSONObject(QueryExecutor.runQuery(
+                        Constants.NO_ANSWER_QUERY + " where quizkey=" + quizKey
+                ).toString()));
+
+                response.put("preferences", new JSONObject(QueryExecutor.runQuery(
+                        "select answers, notepad, calculator, drawingpad from quizzes where quizkey=" + quizKey
+                ).toString()));
+
+                return okJSON(Response.Status.ACCEPTED, response.toString());
+
+            } catch (Exception e) {
+                return okJSON(Response.Status.NO_CONTENT);
+            }
+        }
+
+        return okJSON(Response.Status.UNAUTHORIZED);
+    }
+
     @DELETE
-    @Path("quizzes/{quizkey}")
+    @Path("{quizkey}")
     //Delete a quiz along with all quiz related user data.
     public Response deleteCreatedQuiz(@PathParam("quizkey") int quizkey, @Context HttpHeaders headers) {
         if(validate(headers)) {
             try {
 
-                boolean valid = QueryExecutor.executeUpdateQuery("delete from question where quizkey=" + quizkey)
-                        + QueryExecutor.executeUpdateQuery("delete from user_saved_quizkeys where quizkey=" + quizkey)
-                        + QueryExecutor.executeUpdateQuery("delete from user_quiz_scores where quizkey=" + quizkey)
-                        + QueryExecutor.executeUpdateQuery("delete from quiz_preferences where quizkey=" + quizkey)
-                        > 3;
+                boolean valid = QueryExecutor.executeUpdateQuery("delete from quizzes where quizkey=" + quizkey)
+                        > 0;
                 if (valid) {
-
                     return okJSON(Response.Status.ACCEPTED);
 
                 } else return okJSON(Response.Status.NO_CONTENT);
@@ -131,7 +159,7 @@ public class QuizDatabaseQueryRestService extends RestService {
             try {
 
                 boolean keyExits = QueryExecutor.runQuery(
-                        "select * from question where quizkey=" + id).length() > 0;
+                        "select quizkey from quizzes where quizkey=" + id).length() > 0;
 
                 if (keyExits) return okJSON(Response.Status.ACCEPTED);
 

@@ -9,7 +9,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Random;
 import java.util.UUID;
 
 @Path("users")
@@ -32,6 +31,7 @@ public class UsersDatabaseQueryRestService extends RestService {
 
             if (userExists) {
 
+                //Generate an auth token for the user
                 String uuid = UUID.randomUUID().toString();
 
                 UserStatus.getLoggedInUsers().add(uuid);
@@ -64,7 +64,8 @@ public class UsersDatabaseQueryRestService extends RestService {
 
             boolean userRegistered = QueryExecutor.executeUpdateQuery(
                     "insert into user_logins(username, password, admin) values "
-                            + "('" + request.getUsername() + "','" + request.getPassword() + "'," + 0 + ")") == 1;
+                            //1 bit indicates admin as of right now
+                            + "('" + request.getUsername() + "','" + request.getPassword() + "'," + 1 + ")") == 1;
 
             if (userRegistered) {
                 return okJSON(Response.Status.ACCEPTED);
@@ -88,12 +89,8 @@ public class UsersDatabaseQueryRestService extends RestService {
         if (validate(headers)) {
             try {
 
-                //Random value for primary key.
-                int rand = new Random().nextInt(10000);
-
                 boolean scoreAdded = QueryExecutor.executeUpdateQuery(
-                        "insert into user_quiz_scores values (" +
-                                rand + ",'" +
+                        "insert into user_quiz_scores values ('" +
                                 userData.getUsername() + "'," +
                                 userData.getQuizKey() + "," +
                                 userData.getScore() + ")"
@@ -121,9 +118,7 @@ public class UsersDatabaseQueryRestService extends RestService {
             try {
 
                 return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                        "select distinct a.id, a.score, b.quizname, b.quizowner, b.quizkey from user_quiz_scores a, question b " +
-                                "where a.quizkey=b.quizkey and a.username='" +
-                                username + "'"
+                        "select * from user_quiz_scores, quizzes where user_quiz_scores.quizkey=quizzes.quizkey and username='" + username + "'"
                 ).toString());
 
             } catch (Exception e) {
@@ -143,12 +138,8 @@ public class UsersDatabaseQueryRestService extends RestService {
         if (validate(headers)) {
             try {
 
-                //Random value for primary key.
-                int rand = new Random().nextInt(10000);
-
                 boolean accountAdded = QueryExecutor.executeUpdateQuery(
-                        "insert into user_saved_quizkeys values (" +
-                                rand + ",'" +
+                        "insert into user_saved_quizkeys values ('" +
                                 userData.getUsername() + "'," +
                                 userData.getQuizKey() + ")"
                 ) == 1;
@@ -169,18 +160,17 @@ public class UsersDatabaseQueryRestService extends RestService {
 
     @GET
     @Path("key/{username}")
-    //Get all keys with the correlating username
+    //Get all saved quiz keys from a user
     public Response getSavedKeys(@PathParam("username") String username,  @Context HttpHeaders headers) {
         if(validate(headers)) {
             try {
 
                 return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                        "select distinct quizname, quizowner, quizkey from question where question.quizkey in " +
-                        "(select quizkey from user_saved_quizkeys where user_saved_quizkeys.username='" +
-                        username + "')"
+                        "select * from user_saved_quizkeys, quizzes where user_saved_quizkeys.quizkey=quizzes.quizkey and username='" + username + "'"
                 ).toString());
 
             } catch (Exception e) {
+                e.printStackTrace();
                 return okJSON(Response.Status.NO_CONTENT);
             }
         }
@@ -220,10 +210,11 @@ public class UsersDatabaseQueryRestService extends RestService {
             try {
 
                 return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                        "select distinct quizkey, quizname from question where question.quizowner='" + username + "'"
+                        "select quizkey, quizname from quizzes where quizowner='" + username + "'"
                 ).toString());
 
             } catch (Exception e) {
+                e.printStackTrace();
                 return okJSON(Response.Status.NO_CONTENT);
             }
 

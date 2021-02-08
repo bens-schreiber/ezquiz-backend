@@ -1,8 +1,6 @@
 package apis;
 
 import database.QueryExecutor;
-import etc.Constants;
-import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -14,55 +12,6 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("questions")
 public class QuestionsDatabaseQueryRestService extends RestService {
-
-    @GET
-    @Path("{quizKey}")
-    //Grab all questions from the Quiz Key, without displaying answers
-    public Response getQuestions(@PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
-
-        if (validate(headers)) {
-            try {
-
-                JSONObject response = new JSONObject();
-
-                response.put("questions", new JSONObject(QueryExecutor.runQuery(
-                        Constants.NO_ANSWER_QUERY + " where quizkey = " + quizKey
-                ).toString()));
-
-                response.put("preferences", new JSONObject(QueryExecutor.runQuery(
-                        "select * from quiz_preferences where quizkey = " + quizKey
-                ).toString()));
-
-                return okJSON(Response.Status.ACCEPTED, response.toString());
-
-            } catch (Exception e) {
-                return okJSON(Response.Status.NO_CONTENT);
-            }
-        }
-
-        return okJSON(Response.Status.UNAUTHORIZED);
-    }
-
-    @GET
-    @Path("{quizKey}/{ids}")
-    //Grab questions from quiz key
-    public Response getQuestionsFromSeveralIds(@PathParam("ids") String ids, @PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
-
-        if (validate(headers)) {
-
-            try {
-                return okJSON(Response.Status.ACCEPTED, QueryExecutor.runQuery(
-                        Constants.NO_ANSWER_QUERY + " where question.quizkey = " + quizKey
-                                + " and id in (" + ids + ")"
-                ).toString());
-
-            } catch (Exception e) {
-                return okJSON(Response.Status.NO_CONTENT);
-            }
-        }
-
-        return okJSON(Response.Status.UNAUTHORIZED);
-    }
 
     @GET
     @Path("answer/{ids}")
