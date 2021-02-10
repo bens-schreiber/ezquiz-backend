@@ -5,15 +5,10 @@ import java.util.Set;
 
 public class UserStatus {
 
-    private static final Set<String> loggedInUsers = new HashSet<>();
+    private static final Set<Token> loggedInUsers = new HashSet<>();
 
-    public static Set<String> getLoggedInUsers() {
+    public static Set<Token> getLoggedInUsers() {
         return loggedInUsers;
     }
 
-//    private static final Set<String> usersInQuizzes = new HashSet<>();
-//
-//    public static Set<String> getUsersInQuizzes() {
-//        return usersInQuizzes;
-//    }
 }

@@ -1,6 +1,7 @@
 package apis;
 
 import apis.pojo.UserData;
+import database.Token;
 import database.UserStatus;
 import database.QueryExecutor;
 
@@ -32,15 +33,15 @@ public class UsersDatabaseQueryRestService extends RestService {
             if (userExists) {
 
                 //Generate an auth token for the user
-                String uuid = UUID.randomUUID().toString();
-
-                UserStatus.getLoggedInUsers().add(uuid);
+                Token authToken = new Token();
+                UserStatus.getLoggedInUsers().add(authToken);
 
                 boolean admin = Boolean.parseBoolean(QueryExecutor.runQuery("select admin from user_logins where username='" + request.getUsername() + "'")
                         .getJSONObject("obj0")
                         .getString("admin"));
 
-                return okJSON_(Response.Status.ACCEPTED, uuid, admin);
+                //Return a auth token UUID.
+                return okJSON_(Response.Status.ACCEPTED, authToken.getToken().toString(), admin);
 
             } else {
 
