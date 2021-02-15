@@ -11,16 +11,14 @@ import java.util.ArrayList;
 public class QueryExecutor {
 
     private static BoneCP connectionPool;
-
     static {
         setUpconnectionPool();
     }
 
-    private static Connection getConnection() {
+    public static Connection getConnection() {
         Connection conn = null;
         try {
             conn = connectionPool.getConnection();
-            //System.out.println("Obtained connection from connection pool.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -28,38 +26,40 @@ public class QueryExecutor {
         return conn;
     }
 
-    public static int executeUpdateQuery(String query) {
-        Statement stmt = null;
-        Connection con = null;
-        int response = 0;
-
+    public static int executeUpdateQuery(String query, Object... args) {
         try {
 
-            con = getConnection();
+            Connection con = getConnection();
 
             if (con == null) {
                 throw new SQLException("Failed to establish a connection with the local database");
             }
 
-            stmt = con.createStatement();
-            response = stmt.executeUpdate(query);
+            //Assemble a prepared statement
+            PreparedStatement stmt = con.prepareStatement(query);
+            int i = 1;
+            for (Object obj : args) {
+                if (obj instanceof Integer) {
+                    stmt.setInt(i++, (Integer) obj);
+                } else if (obj instanceof String) {
+                    stmt.setString(i++, (String) obj);
+                }
+            }
+
+            int response = stmt.executeUpdate();
+
+            stmt.close();
+            con.close();
+
+            return response;
 
 
         } catch (Exception e) {
             System.err.println("Error executing query: " + e.getMessage());
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException ignored) {
-            }
 
-            }
-            try {
-                con.close();
-            } catch (SQLException ignored) {
+        }
 
-            }
-        return response;
+        return -1;
     }
 
     public static JSONObject runQuery(String query) {

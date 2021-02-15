@@ -2,7 +2,6 @@ package apis;
 
 import database.Token;
 import database.UserStatus;
-import org.eclipse.jetty.server.Authentication;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -33,17 +32,12 @@ public class RestService {
     //Validate that the given HttpHeaders contain a token in the LoggedInUsers map.
     public boolean validate(HttpHeaders headers) {
 
-        Token token = new Token(headers.getRequestHeader("token").get(0));
+        //todo: Check this somewhere else
+        //Remove expired tokens
+        UserStatus.getLoggedInUsers().removeIf(Token::isExpired);
 
         //contains will check if the token's UUID is equal, not the object
-        boolean validate = UserStatus.getLoggedInUsers().contains(token);
-
-        //token might be expired, attempt to remove it.
-        if (!validate) {
-            UserStatus.getLoggedInUsers().remove(token);
-        }
-
-        return validate;
+        return UserStatus.getLoggedInUsers().contains(new Token(headers.getRequestHeader("token").get(0)));
 
     }
 }

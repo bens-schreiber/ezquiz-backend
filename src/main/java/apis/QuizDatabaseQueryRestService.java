@@ -4,6 +4,7 @@ import apis.pojo.Question;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.x.protobuf.MysqlxPrepare;
 import database.QueryExecutor;
 import etc.Constants;
 import org.json.JSONArray;
@@ -14,6 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 
@@ -26,7 +30,7 @@ public class QuizDatabaseQueryRestService extends RestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    //Insert question into database
+    //Insert quiz into database
     public Response addQuiz(String json, @Context HttpHeaders headers) {
 
         if (validate(headers)) {
@@ -44,17 +48,18 @@ public class QuizDatabaseQueryRestService extends RestService {
                 JSONObject quiz = (JSONObject) consumedJSON.get("quiz");
                 JSONObject preferences = (JSONObject) consumedJSON.get("preferences");
 
-                //Execute the SQL Query
+                //Insert a new quiz into the quizzes table
                 //Use valid boolean to error handle sql.
                 boolean valid;
-                valid = QueryExecutor.executeUpdateQuery("insert into quizzes values("
-                        + quizKey + ","
-                        + "'" + quiz.get("quizname") + "',"
-                        + "'" + quiz.get("quizowner") + "',"
-                        + preferences.get("calculator") + ","
-                        + preferences.get("answers") + ","
-                        + preferences.get("notepad") + ","
-                        + preferences.get("drawingpad") + ")"
+                String insertQuiz = "insert into quizzes values(?, ?, ?, ?, ?, ?, ?)";
+                valid = QueryExecutor.executeUpdateQuery(insertQuiz,
+                        quizKey,
+                        quiz.get("quizname"),
+                        quiz.get("quizowner"),
+                        preferences.get("calculator"),
+                        preferences.get("answers"),
+                        preferences.get("notepad"),
+                        preferences.get("drawingpad")
                 ) == 1;
 
                 //If query executed properly
@@ -71,16 +76,19 @@ public class QuizDatabaseQueryRestService extends RestService {
                     //Create a random seed for the question ID and increase linearly for every id
                     int question_id = new Random().nextInt(100000);
                     for (Question question : questions) {
-                        valid = QueryExecutor.executeUpdateQuery("insert into question values ("
-                                + question_id++ + ", "
-                                + quizKey + ", "
-                                + "'" + question.getQuestion() + "', "
-                                + "'" + question.getAnswer() + "', "
-                                + "'" + question.getType() + "', "
-                                + "'" + question.getSubject() + "', "
-                                + "'" + question.getOptions() + "', "
-                                + "'" + question.getDirections() + "')"
-                        ) == 1;
+
+                        String insertQuestions = "insert into question values(?, ?, ?, ?, ?, ?, ?, ?)";
+                        valid = QueryExecutor.executeUpdateQuery(insertQuestions,
+                                question_id++,
+                                quizKey,
+                                question.getQuestion(),
+                                question.getAnswer(),
+                                question.getType(),
+                                question.getSubject(),
+                                question.getOptions(),
+                                question.getDirections()
+                                ) == 1;
+
                     }
                     if (valid) return okJSON(Response.Status.ACCEPTED);
                 }
@@ -135,8 +143,10 @@ public class QuizDatabaseQueryRestService extends RestService {
         if(validate(headers)) {
             try {
 
-                boolean valid = QueryExecutor.executeUpdateQuery("delete from quizzes where quizkey=" + quizkey)
-                        > 0;
+                String query = "delete from quizzes where quizkey=?";
+
+                boolean valid = QueryExecutor.executeUpdateQuery(query, quizkey) > 0;
+
                 if (valid) {
                     return okJSON(Response.Status.ACCEPTED);
 

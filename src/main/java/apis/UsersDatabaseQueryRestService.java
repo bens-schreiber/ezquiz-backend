@@ -10,7 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.UUID;
 
 @Path("users")
 public class UsersDatabaseQueryRestService extends RestService {
@@ -63,10 +62,9 @@ public class UsersDatabaseQueryRestService extends RestService {
     public Response registerUser(UserData request) {
         try {
 
-            boolean userRegistered = QueryExecutor.executeUpdateQuery(
-                    "insert into user_logins(username, password, admin) values "
-                            //1 bit indicates admin as of right now
-                            + "('" + request.getUsername() + "','" + request.getPassword() + "'," + 1 + ")") == 1;
+            //1 bit indicates admin as of right now
+            String query = "insert into user_logins values(?, ?, 1)";
+            boolean userRegistered = QueryExecutor.executeUpdateQuery(query, request.getUsername(), request.getPassword()) > 0;
 
             if (userRegistered) {
                 return okJSON(Response.Status.ACCEPTED);
