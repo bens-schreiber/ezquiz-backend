@@ -35,7 +35,7 @@ public class QueryExecutor {
                 throw new SQLException("Failed to establish a connection with the local database");
             }
 
-            //Assemble a prepared statement
+            //Assemble a prepared statement if there are args
             PreparedStatement stmt = con.prepareStatement(query);
             int i = 1;
             for (Object obj : args) {
