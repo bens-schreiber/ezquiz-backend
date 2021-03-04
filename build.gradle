@@ -26,3 +26,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
     testCompile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.30'
 }
+
+jar {
+    manifest {
+        attributes "Main-Class": "RestServer"
+    }
+}
