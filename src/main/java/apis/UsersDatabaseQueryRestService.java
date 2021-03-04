@@ -32,7 +32,7 @@ public class UsersDatabaseQueryRestService extends RestService {
             if (userExists) {
 
                 //Generate an auth token for the user
-                Token authToken = new Token();
+                Token authToken = Token.randomToken();
                 UserStatus.getLoggedInUsers().add(authToken);
 
                 boolean admin = Boolean.parseBoolean(QueryExecutor.runQuery("select admin from user_logins where username='" + request.getUsername() + "'")

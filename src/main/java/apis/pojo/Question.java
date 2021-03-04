@@ -2,7 +2,13 @@ package apis.pojo;
 
 public class Question {
 
-    private String quizowner, question, answer, directions, quizname, subject, type, options;
+    private String quizowner;
+    private String question;
+    private String answer;
+    private String directions;
+    private String quizname;
+    private String type;
+    private String options;
 
 
     public String getQuizowner() {
@@ -23,10 +29,6 @@ public class Question {
 
     public String getType() {
         return type;
-    }
-
-    public String getSubject() {
-        return subject;
     }
 
     public String getOptions() {
@@ -55,10 +57,6 @@ public class Question {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public void setOptions(String options) {

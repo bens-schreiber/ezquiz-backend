@@ -7,21 +7,27 @@ import java.util.UUID;
 
 public class Token {
 
-    private final UUID token;
+    private UUID token;
     private Date expiration;
 
-    public Token() {
-
-        this.token = UUID.randomUUID();
-
-        Calendar exp = Calendar.getInstance();
-        exp.add(Calendar.HOUR, 3);
-        this.expiration = exp.getTime();
-    }
+    private Token() {}
 
     //For getting token from a request only
     public Token(String token) {
         this.token = UUID.fromString(token);
+    }
+
+    public static Token randomToken() {
+
+        Token token = new Token();
+
+        Calendar exp = Calendar.getInstance();
+        exp.add(Calendar.HOUR, 3);
+
+        token.expiration = exp.getTime();
+        token.token = UUID.randomUUID();
+
+        return token;
     }
 
     public void resetExpiration() {

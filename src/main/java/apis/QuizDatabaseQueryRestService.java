@@ -4,7 +4,6 @@ import apis.pojo.Question;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
 import database.QueryExecutor;
 import etc.Constants;
 import org.json.JSONArray;
@@ -15,9 +14,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 
@@ -77,14 +73,13 @@ public class QuizDatabaseQueryRestService extends RestService {
                     int question_id = new Random().nextInt(100000);
                     for (Question question : questions) {
 
-                        String insertQuestions = "insert into question values(?, ?, ?, ?, ?, ?, ?, ?)";
+                        String insertQuestions = "insert into question values(?, ?, ?, ?, ?, ?, ?)";
                         valid = QueryExecutor.executeUpdateQuery(insertQuestions,
                                 question_id++,
                                 quizKey,
                                 question.getQuestion(),
                                 question.getAnswer(),
                                 question.getType(),
-                                question.getSubject(),
                                 question.getOptions(),
                                 question.getDirections()
                                 ) == 1;

@@ -36,7 +36,7 @@ public class QuestionsDatabaseQueryRestService extends RestService {
 
     @GET
     @Path("answers/{quizKey}")
-    //Grab all question answers from quiz key
+    //Grab everything from a quiz key
     public Response getQuestionAnswerKey(@PathParam("quizKey") String quizKey, @Context HttpHeaders headers) {
 
         if (validate(headers)) {
