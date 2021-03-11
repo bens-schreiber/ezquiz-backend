@@ -1,11 +1,11 @@
-package apis;
+package classes.apis;
 
-import apis.pojo.Question;
+import classes.apis.pojo.Question;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import database.QueryExecutor;
-import etc.Constants;
+import classes.database.QueryExecutor;
+import classes.etc.Constants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,7 +26,7 @@ public class QuizDatabaseQueryRestService extends RestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("new")
-    //Insert quiz into database
+    //Insert quiz into classes.database
     public Response addQuiz(String json, @Context HttpHeaders headers) {
 
         if (validate(headers)) {
@@ -47,11 +47,12 @@ public class QuizDatabaseQueryRestService extends RestService {
                 //Insert a new quiz into the quizzes table
                 //Use valid boolean to error handle sql.
                 boolean valid;
-                String insertQuiz = "insert into quizzes values(?, ?, ?, ?, ?, ?, ?)";
+                String insertQuiz = "insert into quizzes values(?, ?, ?, ?, ?, ?, ?, ?)";
                 valid = QueryExecutor.executeUpdateQuery(insertQuiz,
                         quizKey,
                         quiz.get("quizname"),
                         quiz.get("quizowner"),
+                        preferences.get("timer"),
                         preferences.get("calculator"),
                         preferences.get("answers"),
                         preferences.get("notepad"),
@@ -118,7 +119,7 @@ public class QuizDatabaseQueryRestService extends RestService {
                 ).toString()));
 
                 response.put("preferences", new JSONObject(QueryExecutor.runQuery(
-                        "select answers, notepad, calculator, drawingpad from quizzes where quizkey=" + quizKey
+                        "select answers, timer, notepad, calculator, drawingpad from quizzes where quizkey=" + quizKey
                 ).toString()));
 
                 return okJSON(Response.Status.ACCEPTED, response.toString());

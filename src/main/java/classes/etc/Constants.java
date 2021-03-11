@@ -1,4 +1,4 @@
-package etc;
+package classes.etc;
 
 public class Constants {
     static public int JETTY_PORT_NUMBER = 7080;

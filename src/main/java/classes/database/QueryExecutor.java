@@ -1,8 +1,8 @@
-package database;
+package classes.database;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
-import etc.Constants;
+import classes.etc.Constants;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -32,7 +32,7 @@ public class QueryExecutor {
             Connection con = getConnection();
 
             if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local database");
+                throw new SQLException("Failed to establish a connection with the local classes.database");
             }
 
             //Assemble a prepared statement if there are args
@@ -72,7 +72,7 @@ public class QueryExecutor {
         try {
             con = getConnection();
             if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local database");
+                throw new SQLException("Failed to establish a connection with the local classes.database");
             }
 
             stmt = con.createStatement();
@@ -128,7 +128,7 @@ public class QueryExecutor {
         try {
             con = getConnection();
             if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local database");
+                throw new SQLException("Failed to establish a connection with the local classes.database");
             }
 
             stmt = con.createStatement();
@@ -180,9 +180,9 @@ public class QueryExecutor {
 
             if (connection != null) {
                 // Assign connection pool to current server.thread
-                System.out.println("Successfully connected to database: " + Constants.getDbPath(true));
+                System.out.println("Successfully connected to classes.database: " + Constants.getDbPath(true));
             } else {
-                System.err.println("Failed to establish a connection with database: " + Constants.getDbPath(true));
+                System.err.println("Failed to establish a connection with classes.database: " + Constants.getDbPath(true));
             }
 
         } catch (SQLException e) {

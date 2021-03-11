@@ -1,4 +1,4 @@
-package database;
+package classes.database;
 
 import java.util.HashSet;
 import java.util.Set;

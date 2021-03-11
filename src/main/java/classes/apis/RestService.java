@@ -1,7 +1,7 @@
-package apis;
+package classes.apis;
 
-import database.Token;
-import database.UserStatus;
+import classes.database.Token;
+import classes.database.UserStatus;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -22,7 +22,7 @@ public class RestService {
 
     }
 
-    //Respond with a status and a body with information from database
+    //Respond with a status and a body with information from classes.database
     public Response okJSON(Response.Status status, String jsonBody) {
 
         return Response.status(status).entity(jsonBody).build();

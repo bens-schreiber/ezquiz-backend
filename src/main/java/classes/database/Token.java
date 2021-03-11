@@ -1,4 +1,4 @@
-package database;
+package classes.database;
 
 import java.util.Calendar;
 import java.util.Date;

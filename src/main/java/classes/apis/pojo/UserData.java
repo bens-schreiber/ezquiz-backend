@@ -1,4 +1,4 @@
-package apis.pojo;
+package classes.apis.pojo;
 
 public class UserData {
 

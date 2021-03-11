@@ -1,7 +1,9 @@
-import apis.UsersDatabaseQueryRestService;
-import apis.QuestionsDatabaseQueryRestService;
-import apis.QuizDatabaseQueryRestService;
-import etc.Constants;
+package classes;
+
+import classes.apis.UsersDatabaseQueryRestService;
+import classes.apis.QuestionsDatabaseQueryRestService;
+import classes.apis.QuizDatabaseQueryRestService;
+import classes.etc.Constants;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;

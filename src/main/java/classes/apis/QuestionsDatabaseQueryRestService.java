@@ -1,6 +1,6 @@
-package apis;
+package classes.apis;
 
-import database.QueryExecutor;
+import classes.database.QueryExecutor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -8,7 +8,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//GET methods for grabbing Questions & Answers from the database.
+//GET methods for grabbing Questions & Answers from the classes.database.
 @Produces(MediaType.APPLICATION_JSON)
 @Path("questions")
 public class QuestionsDatabaseQueryRestService extends RestService {

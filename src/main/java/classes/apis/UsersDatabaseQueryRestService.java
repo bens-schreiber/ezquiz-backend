@@ -1,9 +1,9 @@
-package apis;
+package classes.apis;
 
-import apis.pojo.UserData;
-import database.Token;
-import database.UserStatus;
-import database.QueryExecutor;
+import classes.apis.pojo.UserData;
+import classes.database.Token;
+import classes.database.UserStatus;
+import classes.database.QueryExecutor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -58,7 +58,7 @@ public class UsersDatabaseQueryRestService extends RestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("register")
-    //Post a new user to database.
+    //Post a new user to classes.database.
     public Response registerUser(UserData request) {
         try {
 
@@ -83,7 +83,7 @@ public class UsersDatabaseQueryRestService extends RestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("score")
-    //Insert score into database
+    //Insert score into classes.database
     public Response postQuizScore(UserData userData, @Context HttpHeaders headers) {
         if (validate(headers)) {
             try {
@@ -179,7 +179,7 @@ public class UsersDatabaseQueryRestService extends RestService {
 
     @DELETE
     @Path("key/{username}/{quizkey}")
-    //Delete a saved key from database.
+    //Delete a saved key from classes.database.
     public Response deleteSavedKey(@PathParam("username") String username, @PathParam("quizkey") int quizkey, @Context HttpHeaders headers) {
         if(validate(headers)) {
             try {
