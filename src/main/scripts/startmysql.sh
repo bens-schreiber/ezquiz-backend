@@ -1,1 +1,1 @@
-sudo docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.22 -h 127.0.0.1
+sudo docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d benschreiber/mysql -h 127.0.0.1

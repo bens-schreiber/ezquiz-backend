@@ -37,6 +37,7 @@ public class RestServer {
         registerRestServices(jerseyServlet);
 
         try {
+            System.out.println("Listening on port 7080");
             jettyServer.start();
             jettyServer.join();
         } finally {

@@ -158,6 +158,7 @@ public class QueryExecutor {
 
 
     private static synchronized void setUpconnectionPool() {
+        System.out.println("setting up connection");
         Connection connection;
         try {
             // Set up the connection pool
@@ -168,7 +169,7 @@ public class QueryExecutor {
                 e.printStackTrace();
             }
             BoneCPConfig config = new BoneCPConfig();
-            config.setJdbcUrl(Constants.getDbPath(true));
+            config.setJdbcUrl(Constants.getDbPath());
             config.setUsername(Constants.adminUser);
             config.setPassword(Constants.adminPassword);
             config.setMinConnectionsPerPartition(Constants.CONNECTION_POOL_MIN_CONNECTIONS_PER_PARTITION);
@@ -180,9 +181,9 @@ public class QueryExecutor {
 
             if (connection != null) {
                 // Assign connection pool to current server.thread
-                System.out.println("Successfully connected to classes.database: " + Constants.getDbPath(true));
+                System.out.println("Successfully connected to database: " + Constants.getDbPath());
             } else {
-                System.err.println("Failed to establish a connection with classes.database: " + Constants.getDbPath(true));
+                System.err.println("Failed to establish a connection with database: " + Constants.getDbPath());
             }
 
         } catch (SQLException e) {
