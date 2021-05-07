@@ -37,7 +37,6 @@ public class RestServer {
         registerRestServices(jerseyServlet);
 
         try {
-            System.out.println("Listening on port 7080");
             jettyServer.start();
             jettyServer.join();
         } finally {
@@ -46,13 +45,6 @@ public class RestServer {
     }
 
     private static void registerRestServices(ServletHolder jerseyServlet) {
-        /*
-                jerseyServlet.setInitParameter(
-                "jersey.config.server.provider.classnames",
-                        UserRestService.class.getCanonicalName() + ","
-                            + PostRestService.class.getCanonicalName() + ","
-                            + RelatednessMatrixRestService.class.getCanonicalName());
-         */
         jerseyServlet.setInitParameter(
                 "jersey.config.server.provider.classnames",
                 QuestionsDatabaseQueryRestService.class.getCanonicalName() + ","

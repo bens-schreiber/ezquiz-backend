@@ -6,7 +6,6 @@ import classes.etc.Constants;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class QueryExecutor {
 
@@ -15,7 +14,7 @@ public class QueryExecutor {
         setUpconnectionPool();
     }
 
-    public static Connection getConnection() {
+    private static Connection getConnection() {
         Connection conn = null;
         try {
             conn = connectionPool.getConnection();
@@ -32,7 +31,7 @@ public class QueryExecutor {
             Connection con = getConnection();
 
             if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local classes.database");
+                throw new SQLException("Failed to establish a connection with the local database");
             }
 
             //Assemble a prepared statement if there are args
@@ -56,31 +55,27 @@ public class QueryExecutor {
 
         } catch (Exception e) {
             System.err.println("Error executing query: " + e.getMessage());
-
         }
 
         return -1;
     }
 
     public static JSONObject runQuery(String query) {
-        Statement stmt = null;
-        Connection con = null;
-        ResultSet rs = null;
         JSONObject jsonObject = new JSONObject();
-        int index = 0;
-        ArrayList<String> ret = new ArrayList<>();
         try {
-            con = getConnection();
+
+            Connection con = getConnection();
             if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local classes.database");
+                throw new SQLException("Failed to establish a connection with the database");
             }
 
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
 
             // Use this for getting col names
             ResultSetMetaData rsmd = rs.getMetaData();
             int objCount = 0;
+            int index;
             while (rs.next()) {
                 int numColumns = rsmd.getColumnCount();
                 JSONObject tmp = new JSONObject();
@@ -98,62 +93,15 @@ public class QueryExecutor {
                 jsonObject.put("obj" + objCount++, tmp);
             }
 
-        } catch (Exception e) {
-            System.err.println("Error executing query: " + e.getMessage());
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException ignored) {
-
-            }
-            try {
-                rs.close();
-            } catch (SQLException ignored) {
-
-            }
-            try {
-                con.close();
-            } catch (SQLException ignored) {
-
-            }
-        }
-        return jsonObject;
-    }
-
-    public static boolean execute(String query) throws SQLException {
-        Statement stmt = null;
-        Connection con = null;
-        boolean executed = false;
-
-        try {
-            con = getConnection();
-            if (con == null) {
-                throw new SQLException("Failed to establish a connection with the local classes.database");
-            }
-
-            stmt = con.createStatement();
-            stmt.execute(query);
-            executed = true;
-        } catch (Exception e) {
-            System.err.println("Error executing query: " + e.getMessage());
-        } finally {
-            /* Close an clean up connection. Upon closing this connection, we will
-               return the connection back to the connection pool.
-             */
-            try {
-                assert stmt != null;
-                stmt.close();
-            } catch (SQLException ignored) {
-
-            }
-        }
-        try {
+            rs.close();
             con.close();
-        } catch (SQLException ignored) {
+            stmt.close();
 
+        } catch (Exception e) {
+            System.err.println("Error executing query: " + e.getMessage());
         }
 
-        return executed;
+        return jsonObject;
     }
 
 
