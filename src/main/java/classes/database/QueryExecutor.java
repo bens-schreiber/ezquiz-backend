@@ -14,21 +14,21 @@ public class QueryExecutor {
         setUpconnectionPool();
     }
 
-    private static Connection getConnection() {
-        Connection conn = null;
-        try {
-            conn = connectionPool.getConnection();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return conn;
-    }
+//    private static Connection getConnection() {
+//        Connection conn = null;
+//        try {
+//            conn = connectionPool.getConnection();
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
+//
+//        return conn;
+//    }
 
     public static int executeUpdateQuery(String query, Object... args) {
         try {
 
-            Connection con = getConnection();
+            Connection con = connectionPool.getConnection();
 
             if (con == null) {
                 throw new SQLException("Failed to establish a connection with the local database");
@@ -64,7 +64,7 @@ public class QueryExecutor {
         JSONObject jsonObject = new JSONObject();
         try {
 
-            Connection con = getConnection();
+            Connection con = connectionPool.getConnection();
             if (con == null) {
                 throw new SQLException("Failed to establish a connection with the database");
             }
@@ -123,12 +123,14 @@ public class QueryExecutor {
             config.setMinConnectionsPerPartition(Constants.CONNECTION_POOL_MIN_CONNECTIONS_PER_PARTITION);
             config.setMaxConnectionsPerPartition(Constants.CONNECTION_POOL_MAX_CONNECTIONS_PER_PARTITION);
             config.setPartitionCount(Constants.CONNECTION_POOL_PARTITION_COUNT);
+
             connectionPool = new BoneCP(config);
 
             connection = connectionPool.getConnection(); // fetch a connection
 
             if (connection != null) {
                 // Assign connection pool to current server.thread
+                connection.close();
                 System.out.println("Successfully connected to database: " + Constants.getDbPath());
             } else {
                 System.err.println("Failed to establish a connection with database: " + Constants.getDbPath());
