@@ -18,7 +18,7 @@ public class Token {
     }
 
     /**
-    @return randomly generated token with a default of 3 hour expiration period.
+    * @return randomly generated token with a default of 3 hour expiration period.
     **/
     public static Token randomToken() {
 
