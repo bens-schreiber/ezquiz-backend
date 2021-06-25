@@ -12,11 +12,14 @@ public class Token {
 
     private Token() {}
 
-    //For getting token from a request only
+    //Construct a token from a UUID string 
     public Token(String token) {
         this.token = UUID.fromString(token);
     }
 
+    /**
+    * @return randomly generated token with a default of 3 hour expiration period.
+    **/
     public static Token randomToken() {
 
         Token token = new Token();

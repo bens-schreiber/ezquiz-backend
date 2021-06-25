@@ -32,7 +32,6 @@ public class RestService {
     //Validate that the given HttpHeaders contain a token in the LoggedInUsers map.
     public boolean validate(HttpHeaders headers) {
 
-        //todo: Check this somewhere else
         //Remove expired tokens
         UserStatus.getLoggedInUsers().removeIf(Token::isExpired);
         System.out.println(UserStatus.getLoggedInUsers());
