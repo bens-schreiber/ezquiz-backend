@@ -35,6 +35,7 @@ public class RestService {
         //todo: Check this somewhere else
         //Remove expired tokens
         UserStatus.getLoggedInUsers().removeIf(Token::isExpired);
+        System.out.println(UserStatus.getLoggedInUsers());
 
         //contains will check if the token's UUID is equal, not the object
         return UserStatus.getLoggedInUsers().contains(new Token(headers.getRequestHeader("token").get(0)));
